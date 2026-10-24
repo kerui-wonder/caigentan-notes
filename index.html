@@ -166,6 +166,40 @@
   }
   footer .motto{font-family:"STKaiti","KaiTi","Songti SC",serif;font-size:22px;color:var(--gold);letter-spacing:.2em;margin-bottom:6px;}
   .fade-in-once{opacity:1 !important;transform:none !important;}
+  /* ===== 目录 / 搜索 ===== */
+  .toc{max-width:860px;margin:0 auto;padding:14px 24px 6px;}
+  .toc-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .toc-bar strong{font-size:14px;letter-spacing:.1em;color:var(--ink);}
+  .search-box{
+    flex:1;min-width:200px;font-family:inherit;font-size:14px;
+    padding:8px 14px;border:1px solid var(--line);border-radius:999px;
+    background:var(--card);color:var(--ink);
+  }
+  .search-box:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(154,123,63,.15);}
+  .toc-toggle{cursor:pointer;font-size:13.5px;color:var(--gold);user-select:none;white-space:nowrap;}
+  .toc-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:8px;margin-top:12px;
+  }
+  .toc-item{
+    display:block;text-decoration:none;border:1px solid var(--line);
+    background:var(--card);border-radius:8px;padding:8px 12px;
+    font-size:13.5px;color:var(--ink-soft);transition:all .2s;
+  }
+  .toc-item:hover{border-color:var(--vermilion-soft);color:var(--vermilion);transform:translateY(-1px);}
+  .toc-item .d{font-size:12px;color:var(--ink-faint);}
+  .toc-item .t{display:block;margin-top:2px;font-weight:600;color:var(--ink);}
+  /* 返回顶部 */
+  .to-top{
+    position:fixed;right:20px;bottom:22px;z-index:60;
+    width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
+    background:var(--vermilion);color:#f7efe0;font-size:20px;
+    box-shadow:0 4px 10px rgba(42,38,34,.25);
+    opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;
+  }
+  .to-top.show{opacity:1;pointer-events:auto;}
+  .to-top:hover{transform:translateY(-2px);}
+  .entry{scroll-margin-top:84px;}
 </style>
 </head>
 <body>
@@ -178,6 +212,27 @@
     这是一份《菜根谭》的私人共读笔记：一个人每天背一条、写下当时的感受；一位朋友（BB）偶尔接话，还顺手写了一篇《观沧海》；我（WorkBuddy）也掺了一脚，给每条补了一段自己的理解。三种声音，同一本古书。点击下面的标签，可以选择只看谁的话。
   </p>
 </header>
+
+<nav class="toc" id="toc">
+  <div class="toc-bar">
+    <strong>目录</strong>
+    <input class="search-box" id="searchBox" type="search" placeholder="搜索关键词，如「实践」「平静」「观沧海」…">
+    <span class="toc-toggle" id="tocToggle">收起 ▲</span>
+  </div>
+  <div class="toc-grid" id="tocGrid">
+    <a class="toc-item" href="#e1"><span class="d">10/12</span><span class="t">百折不回之真心</span></a>
+    <a class="toc-item" href="#e2"><span class="d">10/13</span><span class="t">立业建功</span></a>
+    <a class="toc-item" href="#e3"><span class="d">10/14</span><span class="t">身不宜忙</span></a>
+    <a class="toc-item" href="#e4"><span class="d">10/15</span><span class="t">盘根错节</span></a>
+    <a class="toc-item" href="#e5"><span class="d">10/16</span><span class="t">钟鼓体虚</span></a>
+    <a class="toc-item" href="#e6"><span class="d">10/19</span><span class="t">一念常惺</span></a>
+    <a class="toc-item" href="#e7"><span class="d">10/20</span><span class="t">不忍的念头</span></a>
+    <a class="toc-item" href="#e8"><span class="d">10/21</span><span class="t">拨开尘氛</span></a>
+    <a class="toc-item" href="#e9"><span class="d">10/22</span><span class="t">穷理尽妙</span></a>
+    <a class="toc-item" href="#e10"><span class="d">10/23</span><span class="t">动静殊操</span></a>
+    <a class="toc-item" href="#e11"><span class="d">诗外</span><span class="t">曹操《观沧海》</span></a>
+  </div>
+</nav>
 
 <div class="toolbar">
   <div class="toolbar-inner">
@@ -493,6 +548,7 @@
   <div class="motto">风狂雨骤处 · 波恬浪静</div>
   <div>共读仍在继续 · 每背一条，就多一份手记</div>
 </footer>
+<button class="to-top" id="toTop" aria-label="返回顶部">↑</button>
 
 <script>
   // 语音过滤
@@ -529,6 +585,32 @@
     target.style.transition = 'none';
     target.style.filter = 'brightness(1.06)';
     setTimeout(()=>{ target.style.transition = 'filter 1.2s'; target.style.filter = ''; }, 60);
+  });
+  // 搜索：按关键词过滤条目
+  const searchBox = document.getElementById('searchBox');
+  searchBox.addEventListener('input', ()=>{
+    const q = searchBox.value.trim().toLowerCase();
+    document.querySelectorAll('.entry').forEach(el=>{
+      if(!q){ el.style.display=''; return; }
+      const hit = el.textContent.toLowerCase().includes(q);
+      el.style.display = hit ? '' : 'none';
+    });
+  });
+
+  // 返回顶部
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', ()=>{
+    toTop.classList.toggle('show', window.scrollY > 600);
+  });
+  toTop.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
+
+  // 目录折叠
+  const tocToggle = document.getElementById('tocToggle');
+  const tocGrid = document.getElementById('tocGrid');
+  tocToggle.addEventListener('click', ()=>{
+    const hidden = tocGrid.style.display === 'none';
+    tocGrid.style.display = hidden ? 'grid' : 'none';
+    tocToggle.textContent = hidden ? '收起 ▲' : '展开 ▼';
   });
 </script>
 </body>
