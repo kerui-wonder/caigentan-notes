@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>菜根谭 · 共读手记</title>
+<style>
+  :root{
+    --paper:#f5efe3;
+    --paper-2:#efe7d6;
+    --card:#faf6ec;
+    --ink:#2a2622;
+    --ink-soft:#5c534a;
+    --ink-faint:#8a7f72;
+    --vermilion:#a63a2b;
+    --vermilion-soft:#c05a48;
+    --line:#ddd0b8;
+    --gold:#9a7b3f;
+    --teal:#4a7c6f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Source Han Serif SC","Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    background:
+      radial-gradient(1200px 600px at 20% -5%, rgba(200,180,140,.18), transparent 60%),
+      radial-gradient(900px 500px at 95% 15%, rgba(166,58,43,.06), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    line-height:1.9;
+    letter-spacing:.02em;
+  }
+  /* ============ header ============ */
+  header{
+    max-width:860px;margin:0 auto;padding:72px 24px 40px;text-align:center;
+  }
+  .seal{
+    display:inline-block;
+    width:56px;height:56px;line-height:56px;
+    background:var(--vermilion);color:#f7efe0;
+    font-family:"STKaiti","KaiTi","Songti SC","STSong",serif;font-size:26px;font-weight:700;
+    border-radius:8px;box-shadow:2px 3px 0 rgba(42,38,34,.15);
+    margin-bottom:18px;user-select:none;
+  }
+  h1{
+    font-family:"Source Han Serif SC","STKaiti","KaiTi","Songti SC","STSong","SimSun",serif;
+    font-size:52px;font-weight:700;letter-spacing:.12em;
+    color:var(--ink);
+  }
+  .subtitle{
+    margin-top:10px;color:var(--ink-soft);font-size:16px;letter-spacing:.35em;
+  }
+  .intro{
+    max-width:620px;margin:26px auto 0;color:var(--ink-soft);font-size:15.5px;
+    text-align:left;padding:0 6px;
+  }
+  .intro em{font-style:normal;color:var(--vermilion);}
+  /* ============ filter bar ============ */
+  .toolbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(245,239,227,.92);backdrop-filter:blur(6px);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:10px 24px;
+  }
+  .toolbar-inner{
+    max-width:860px;margin:0 auto;
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;
+  }
+  .chip{
+    font-family:inherit;font-size:14px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-soft);
+    padding:5px 16px;border-radius:999px;transition:all .2s;letter-spacing:.06em;
+  }
+  .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px;}
+  .chip.off{opacity:.38;filter:grayscale(.7);}
+  .chip:hover{border-color:var(--gold);}
+  .dot-me{background:var(--vermilion);}
+  .dot-friend{background:var(--teal);}
+  .dot-wb{background:var(--gold);}
+  .chip-random{
+    border-color:var(--vermilion-soft);color:var(--vermilion);
+  }
+  .chip-random:hover{background:var(--vermilion);color:#f7efe0;}
+  /* ============ entries ============ */
+  main{max-width:860px;margin:0 auto;padding:48px 24px 80px;}
+  .entry{
+    position:relative;
+    margin:0 0 56px;
+    opacity:0;transform:translateY(22px);
+    transition:opacity .7s ease,transform .7s ease;
+  }
+  .entry.visible{opacity:1;transform:none;}
+  .entry-head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:14px;
+  }
+  .date-badge{
+    font-size:13px;color:#f7efe0;background:var(--vermilion);
+    padding:2px 12px;border-radius:4px;letter-spacing:.08em;white-space:nowrap;
+  }
+  .chapter{
+    color:var(--ink-faint);font-size:13.5px;letter-spacing:.2em;
+  }
+  .original{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:4px solid var(--gold);
+    padding:24px 28px;border-radius:0 8px 8px 0;
+    position:relative;
+  }
+  .original::before{
+    content:"「";position:absolute;right:14px;top:2px;
+    font-size:44px;color:var(--line);font-family:"STKaiti","KaiTi","Songti SC",serif;
+  }
+  .original p{
+    font-size:17.5px;font-weight:600;color:var(--ink);letter-spacing:.05em;
+  }
+  .original .orig-note{
+    margin-top:8px;font-size:13px;color:var(--ink-faint);font-weight:400;
+  }
+  .voices{margin-top:16px;display:flex;flex-direction:column;gap:12px;}
+  .reflection{
+    display:flex;gap:14px;align-items:flex-start;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:8px;padding:16px 20px;
+    transition:opacity .3s,transform .3s;
+  }
+  .reflection:hover{border-color:var(--gold);}
+  .avatar{
+    flex:0 0 auto;width:42px;height:42px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:600;color:#f7efe0;letter-spacing:.02em;
+    box-shadow:1px 2px 3px rgba(42,38,34,.15);
+  }
+  .avatar.i7u{background:var(--vermilion);}
+  .avatar.bb{background:var(--teal);}
+  .avatar.wb{background:var(--gold);}
+  .ref-body{flex:1;min-width:0;}
+  .ref-head{
+    font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .tag{
+    font-size:11.5px;font-weight:400;color:var(--ink-faint);
+    border:1px solid var(--line);border-radius:3px;padding:0 6px;background:var(--card);
+  }
+  .ref-text{font-size:15px;color:var(--ink-soft);}
+  .ref-text .hl{color:var(--vermilion);}
+  .group-reactions{
+    margin-top:10px;padding:10px 20px;
+    font-size:13.5px;color:var(--ink-faint);
+  }
+  .group-reactions .who{color:var(--vermilion-soft);}
+  /* special entry (观沧海) */
+  .entry.special .original{border-left-color:var(--teal);}
+  .entry.special .date-badge{background:var(--teal);}
+  .poem-lines{
+    display:grid;grid-template-columns:1fr 1fr;gap:2px 40px;
+    font-size:16.5px;font-weight:500;margin-top:6px;
+  }
+  @media (max-width:560px){.poem-lines{grid-template-columns:1fr;}}
+  /* ============ footer ============ */
+  footer{
+    max-width:860px;margin:0 auto;padding:30px 24px 60px;text-align:center;
+    color:var(--ink-faint);font-size:13.5px;border-top:1px dashed var(--line);
+  }
+  footer .motto{font-family:"STKaiti","KaiTi","Songti SC",serif;font-size:22px;color:var(--gold);letter-spacing:.2em;margin-bottom:6px;}
+  .fade-in-once{opacity:1 !important;transform:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="seal">菜根</div>
+  <h1>菜根谭 · 共读手记</h1>
+  <div class="subtitle">咬得菜根，百事可做</div>
+  <p class="intro">
+    这是一份《菜根谭》的私人共读笔记：一个人每天背一条、写下当时的感受；一位朋友（BB）偶尔接话，还顺手写了一篇《观沧海》；我（WorkBuddy）也掺了一脚，给每条补了一段自己的理解。三种声音，同一本古书。点击下面的标签，可以选择只看谁的话。
+  </p>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <button class="chip" data-voice="i7u"><span class="dot dot-me"></span>我（·i7u）</button>
+    <button class="chip" data-voice="bb"><span class="dot dot-friend"></span>友人（BB）</button>
+    <button class="chip" data-voice="wb"><span class="dot dot-wb"></span>助手（WorkBuddy）</button>
+    <button class="chip chip-random" id="randomBtn">🎲 随机翻一页</button>
+  </div>
+</div>
+
+<main id="entries">
+
+  <!-- 10.12 -->
+  <article class="entry" id="e1">
+    <div class="entry-head"><span class="date-badge">10月12日</span><span class="chapter">菜根谭 · 修身</span></div>
+    <div class="original">
+      <p>士人有百折不回之真心，才有万变不穷之妙用。</p>
+      <div class="orig-note">【一九】士人：指读书人。穷：穷尽。妙用：奇妙的技巧。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">说实话背菜根谭的过程中我并不是对所有格言都感同身受，就像这句话，我背的时候觉得这不就是小时候老师、家长告诉我们的话吗。可我发现这些格言会在我们遇到问题时给予我们不同的视角，情绪发生前<span class="hl">「停」</span>住，想想古人怎么做的。</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="bb">
+        <div class="avatar bb">BB</div>
+        <div class="ref-body">
+          <div class="ref-head">BB <span class="tag">友人</span></div>
+          <div class="ref-text">面对坎坷，愈战愈勇啊。知难而进在当下这个时代好像不被提倡了，我们更希望像水一样跟坎坷共处，而不是像鸡蛋一样在坎坷之中粉身碎骨。</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">「百折不回」容易被读成死磕。但古人说真心，也留了后路——<span class="hl">「万变不穷」</span>四个字才是重点：不是硬扛，是扛住了之后还能变。你想到情绪来之前先「停」，其实就是给「变」留了个口子。</div>
+        </div>
+      </div>
+      <div class="group-reactions">💬 群聊花絮：<span class="who">成甲</span>「背诵经典，也是内化智慧的一步～」　<span class="who">夏夏</span> 送了个表情</div>
+    </div>
+  </article>
+
+  <!-- 10.13 -->
+  <article class="entry" id="e2">
+    <div class="entry-head"><span class="date-badge">10月13日</span><span class="chapter">菜根谭 · 修身</span></div>
+    <div class="original">
+      <p>立业建功，事事要从实地着脚，若少慕声闻，便成伪果；讲道修德，念念要从虚处立基，若稍计功效，便落尘情。</p>
+      <div class="orig-note">着脚：落脚。声闻：名声。伪果：虚假的成果。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">利他就是利己。我以前帮人是为了得到奖赏，夸人是为了被注意，怜悯是为了彰显道德，做善事本身的意义被我缩小，异化成了任务。利己的事做多了，<span class="hl">人活的世界越来越小</span>。</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="bb">
+        <div class="avatar bb">BB</div>
+        <div class="ref-body">
+          <div class="ref-head">BB <span class="tag">友人</span></div>
+          <div class="ref-text">那你现在呢？</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我 · 回BB</span></div>
+          <div class="ref-text">现在我做事会想这件事对别人来说有帮助吗，能不能让别人不尴尬、可不可以让别人的生活更轻松一点？假如善意没有得到回应，还能不能继续做下去。目前感受就这么多。</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">你觉察到善意被异化，正挨着这句话的骨头。「念从虚处立基」——基一落在功效、声闻上，善就成「伪果」了。你现在的转向，是<span class="hl">从果上求，回到根上立</span>。BB 问「那你现在呢」，你的回答已经说明这步迈出去了。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.14 -->
+  <article class="entry" id="e3">
+    <div class="entry-head"><span class="date-badge">10月14日</span><span class="chapter">菜根谭 · 修身</span></div>
+    <div class="original">
+      <p>身不宜忙，而忙于闲暇之时，亦可儆惕惰气；心不可放，而放于收摄之后，亦可鼓畅天机。</p>
+      <div class="orig-note">儆惕：警觉戒惕。收摄：收敛约束。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">读完我就想到了适度原则，不管做什么好像都需要适度。不仅仅是玩游戏、刷视频需要适度，读书、学习、运动照样需要适度。我的大脑很喜欢谈努力，假如能搞一个小时，那能不能搞两个小时、三个小时呢？</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">「大脑喜欢谈努力」这句扎心。忙和放本是一对：身忙于闲暇可惕惰，心放于收摄后可畅机。分水岭不在忙闲，在你是<span class="hl">主动安排，还是被惯性推着跑</span>。你已经在问这个问题，惯性就开始松了。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.15 -->
+  <article class="entry" id="e4">
+    <div class="entry-head"><span class="date-badge">10月15日</span><span class="chapter">菜根谭 · 修身</span></div>
+    <div class="original">
+      <p>非盘根错节，何以别攻木之利器；非贯石饮羽，何以明射虎之精诚；非颠沛横逆，何以验操守之坚定。</p>
+      <div class="orig-note">贯石饮羽：箭深入石中、没入箭羽，喻精诚所至。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">联系生活，它对我的启发，我想到的第一个词就是<span class="hl">实践</span>。你要把你脑海里的想法在现实中跑起来，即使是一个看起来很蠢的想法，你也可以在实践中改进。没有实践，就没有反馈，也就没有进步。</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">你把「盘根错节」翻成「实践里的阻力」，是活学。利器不是天生利，是磕出来的。没有难事检验，所谓能力只是个假设，一上场就露馅。你那句「看起来很蠢的想法也可以跑起来」，比这句格言本身还实用。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.16 -->
+  <article class="entry" id="e5">
+    <div class="entry-head"><span class="date-badge">10月16日</span><span class="chapter">菜根谭 · 修身</span></div>
+    <div class="original">
+      <p>钟鼓体虚，为声闻而招击撞。麋鹿性逸，因豢养而受羁縻。可见名为招祸之本，欲乃散志之媒。学者不可不力为扫除也。</p>
+      <div class="orig-note">声闻：名声。羁縻：束缚。散志：消磨意志。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">今天莫名的累，背的也很痛苦，我以为自己每天都能坚持😣。看来还是高估了自己😰。现在啥感受都想不出来，我要罢工一天😖</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">那天你累了、想罢工，反而最像这句话——「学者不可不力为扫除」。要扫除的未必是名欲，先是那股<span class="hl">「我必须每天满格」的自我苛责</span>。坚持不是不断，是断了还能回来。后来你不也回来了吗。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.19 -->
+  <article class="entry" id="e6">
+    <div class="entry-head"><span class="date-badge">10月19日</span><span class="chapter">菜根谭 · 修省</span></div>
+    <div class="original">
+      <p>一念常惺，才避去神功鬼矢；纤尘不染，方解开地网天罗。</p>
+      <div class="orig-note">常惺：时常保持清醒警觉。神功鬼矢：暗箭与陷阱。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">想到了第二条：「一念错，便觉百行皆非」。外部环境愈发复杂，诱惑也越来越多。你会发现很多人在事业蒸蒸日上时开始放松警惕，苦心经营的人设崩塌，有些甚至影响到了婚姻。你可能主观无错，但<span class="hl">没人能逆转时空，没人补偿你投入的时间</span>。</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">「常惺」不是时刻紧绷，是清醒地松着。你担心人事业好了就松警惕，根子在把警惕当盔甲、当防守。常惺该是日常的呼吸，不是危机来了才披上的东西。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.20 -->
+  <article class="entry" id="e7">
+    <div class="entry-head"><span class="date-badge">10月20日</span><span class="chapter">菜根谭 · 修省</span></div>
+    <div class="original">
+      <p>一点不忍的念头，是生民生物之根芽；一段不为的气节，是撑天撑地之柱石。故君子于一虫一蚁不忍伤残，一缕一丝勿容贪冒，便可为万物立命、天地立心矣。</p>
+      <div class="orig-note">贪冒：贪图财利。立命立心：出自张载「为天地立心，为生民立命」。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">背完后给我的触动不大，可能是现在的境界不够。但<span class="hl">背和学是相互联系</span>，未来有一天可能就领悟了。(❁´ω`❁)</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">你说「境界不够」——可那点生涩的不忍，恰恰最真。道理装满的人，怜悯反而容易变成姿态。你先背下来，等于给未来的自己埋了颗种，不急它现在开花。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.21 -->
+  <article class="entry" id="e8">
+    <div class="entry-head"><span class="date-badge">10月21日</span><span class="chapter">菜根谭 · 修省</span></div>
+    <div class="original">
+      <p>拨开世上尘氛，胸中自无火焰冰兢；消却心中鄙吝，眼前时有月到风来。</p>
+      <div class="orig-note">火焰冰兢：焦灼与恐惧。鄙吝：庸俗计较。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">最近因为害怕落后，总是想学很多东西，结果不如人意，想做的事太多，没有重点，导致一件事都做不好。然后做的时候还在想方法够不够好、够不够准确，害怕努力付之东流。今天背了这条，心里渐渐有了个答案：我放不下外部环境，我对它有依恋。<span class="hl">为什么会有依恋呢？我现在还没有答案</span>[晕]</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">你问「为什么依恋」，答案可能不在外部。尘氛是别人跑起来的声音，你一听见就觉得自己慢。月到风来不是赶走尘氛换来的，是拨开后它自己来的——<span class="hl">你手上已经在拨了</span>，只是还没察觉。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.22 -->
+  <article class="entry" id="e9">
+    <div class="entry-head"><span class="date-badge">10月22日</span><span class="chapter">菜根谭 · 修省</span></div>
+    <div class="original">
+      <p>穷理尽妙，钩深出重渊之鱼；进道忘劳，致远乘千里之马。</p>
+      <div class="orig-note">穷理：深究道理。忘劳：忘记劳苦。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">我想到的是两个画面。一人大雪天冒着凛冽的寒风，顶着鹅毛大雪，破损的衣裳随风飘荡，眼神依旧透露着光。老翁垂钓，微握鱼竿，一动不动。两句话关键是「妙」和「劳」，因为有更为重要的事，所以能够忍受眼前的痛苦。<span class="hl">价值观就是「什么更重要」</span>，别人可能也讨厌早起、锻炼，也想吃垃圾食品，但他可能有比这些更重要的事。</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">你用「大雪」「老翁垂钓」拆解「妙」与「劳」，很准。忘劳不是不累，是累被更重要的事盖过去了。价值观就是那个「盖过去的东西」：它不消除痛苦，<span class="hl">只给痛苦一个位置</span>。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 10.23 -->
+  <article class="entry" id="e10">
+    <div class="entry-head"><span class="date-badge">10月23日</span><span class="chapter">菜根谭 · 修省</span></div>
+    <div class="original">
+      <p>学者动静殊操、喧寂异趣，还是锻炼未熟，心神混淆故耳。须是操存涵养，定云止水中，有鸢飞鱼跃的景象；风狂雨骤处，有波恬浪静的风光，才见处一化齐之妙。</p>
+      <div class="orig-note">动静殊操：动与静时操守不一。处一化齐：处于一致的化境。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="i7u">
+        <div class="avatar i7u">i7u</div>
+        <div class="ref-body">
+          <div class="ref-head">·i7u <span class="tag">我</span></div>
+          <div class="ref-text">我在想到底是为什么，能够在动和喧里看到鸢飞鱼跃、感受到波恬浪静。这种可遇不可求，似乎只有得道的高僧、隐世的高人才有的「能力」。我能想到的答案：①专注力极其强大，能从一堆事情组合成的「麦芽糖」里抽离出一小块放入嘴里，耐心咀嚼，不会「吃着碗里的看着锅里的」。②有比外界诱惑更重要的东西，也就是价值观。假如一个人只是见识太少、眼界太窄，他的本分也可能变成欲望——就像《平凡的世界》里说的：「谁让你读了这么多书，又知道了双水村以外还有个大世界。」③低预期：幸福的关键是降低预期。当你有10万，你就想要100万……这个过程是没有终点的。而那些平静的「人」，对他们来说，呼吸、觉察、吃饭都是快乐的。很多玩游戏追求极致画质，一台电脑动辄几万；而对他们来说，<span class="hl">他们一直都在玩最极致画质的游戏——地球 Online</span>🌏</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">你三点都戳到根上了。补一句：处一化齐，不是练到「外界影响不了我」，是<span class="hl">外界来了我也不散</span>。像你写的——呼吸、觉察、吃饭都是游戏。平静不是没有浪，是浪里还能站着。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 观沧海 special -->
+  <article class="entry special" id="e11">
+    <div class="entry-head"><span class="date-badge">10月12日</span><span class="chapter">诗外 · 曹操《观沧海》 · BB 手抄</span></div>
+    <div class="original">
+      <p>东临碣石，以观沧海。水何澹澹，山岛竦峙。树木丛生，百草丰茂。秋风萧瑟，洪波涌起。日月之行，若出其中；星汉灿烂，若出其里。幸甚至哉，歌以咏志。</p>
+      <div class="orig-note">BB 当晚在群里手抄此诗，并把它拆成一首「歌」来讲。</div>
+    </div>
+    <div class="voices">
+      <div class="reflection" data-voice="bb">
+        <div class="avatar bb">BB</div>
+        <div class="ref-body">
+          <div class="ref-head">BB <span class="tag">友人</span></div>
+          <div class="ref-text">如果把这首诗的节奏想象成一首歌：「东临碣石，以观沧海」之后就是——预备，唱！唱什么呢？水、山、树、草、风、波。这六句承担了「承」的部分，也就是过渡。<span class="hl">过渡句最能体现一个人平日的诗文素养</span>：一个人写诗，一定是为了表达高潮的「转」，从地面到塔尖，中间铺垫的部分，就是他日常的素养。过渡句常有，而经典难求。曹操的奇就奇在，写景抒情的功夫和点题的功夫一样深——有叠词、有韵脚，好记、好念、好传唱。前面铺垫一大堆，就是为了引出「日月」「星汉」「出其中」「出其里」：他有大抱负，把景物自比了，直接点明——我志在此！主题表达完毕，歌词来到尾声，收工，意满离。曹操衣袖一挥，转身离去，不带走一片云彩。（但是带走了一份好心情～</div>
+        </div>
+      </div>
+      <div class="reflection" data-voice="wb">
+        <div class="avatar wb">WB</div>
+        <div class="ref-body">
+          <div class="ref-head">WorkBuddy <span class="tag">助手</span></div>
+          <div class="ref-text">BB 把诗拆成一首歌，抓对了「承」的铺垫美学。补一句：曹操的豪，不是喊出来的，是先用一片海垫起来的。<span class="hl">景物全成了他自我的度量衡</span>——沧海装得下日月，他才敢说「志在此」。这也是「立业建功，事事要从实地着脚」的另一种写法。</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+</main>
+
+<footer>
+  <div class="motto">风狂雨骤处 · 波恬浪静</div>
+  <div>共读仍在继续 · 每背一条，就多一份手记</div>
+</footer>
+
+<script>
+  // 语音过滤
+  const state = { i7u: true, bb: true, wb: true };
+  const chips = document.querySelectorAll('.chip[data-voice]');
+  function applyFilter(){
+    document.querySelectorAll('.reflection').forEach(el=>{
+      const v = el.dataset.voice;
+      el.style.display = state[v] ? '' : 'none';
+    });
+  }
+  chips.forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const v = chip.dataset.voice;
+      state[v] = !state[v];
+      chip.classList.toggle('off', !state[v]);
+      applyFilter();
+    });
+  });
+
+  // 滚动渐显
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  },{threshold:.08});
+  document.querySelectorAll('.entry').forEach(el=>io.observe(el));
+
+  // 随机翻一页
+  document.getElementById('randomBtn').addEventListener('click', ()=>{
+    const entries = document.querySelectorAll('.entry');
+    const target = entries[Math.floor(Math.random()*entries.length)];
+    target.scrollIntoView({behavior:'smooth', block:'start'});
+    target.style.transition = 'none';
+    target.style.filter = 'brightness(1.06)';
+    setTimeout(()=>{ target.style.transition = 'filter 1.2s'; target.style.filter = ''; }, 60);
+  });
+</script>
+</body>
+</html>
